@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"strings"
@@ -41,26 +40,20 @@ func main() {
 	check(err)
 	defer csvfile.Close()
 	r := csv.NewReader(csvfile)
+	lines, err := r.ReadAll()
+	check(err)
 
 	fmt.Println("Quiz beginning:")
-	questions := 0
 	correct := 0
 
-	for {
-		record, err := r.Read()
-		if err == io.EOF {
-			break
-		}
-		check(err)
-		questions += 1
-		question := record[0]
-		answer := record[1]
+	for _, line := range lines {
+		question := line[0]
+		answer := line[1]
 		result, err := askQuestion(question, answer)
 		check(err)
 		if result {
 			correct += 1
 		}
 	}
-
-	fmt.Printf("You got %d correct out of %d\n", correct, questions)
+	fmt.Printf("You got %d correct out of %d\n", correct, len(lines))
 }
