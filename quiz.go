@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -31,8 +32,12 @@ func askQuestion(question string, answer string) (bool, error) {
 	}
 }
 
+var csvFilePath = flag.String("csv", "problems.csv", "The csv file containing questions and answers")
+
 func main() {
-	csvfile, err := os.Open("problems.csv")
+	flag.Parse()
+
+	csvfile, err := os.Open(*csvFilePath)
 	check(err)
 	defer csvfile.Close()
 	r := csv.NewReader(csvfile)
@@ -55,7 +60,6 @@ func main() {
 		if result {
 			correct += 1
 		}
-		fmt.Println(questions, correct)
 	}
 
 	fmt.Printf("You got %d correct out of %d\n", correct, questions)
